@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Photo Capture By Sanjeev Kumar Singh</title>
+    <style>
+        #container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #capturedImage {
+            max-width: 50%;
+            height: auto;
+        }
+
+        #downloadLink {
+            margin-left: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1><marquee><b>Webcam Photo Capture Developed By <i> Sanjeev Kumar Singh</i></b></marquee></h1>
+    <div id="container">
+        <div>
+            <video id="webcam" autoplay></video>
+            <button id="capture">Capture Photo</button>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+        <div>
+            <img id="capturedImage" style="display:none;">
+            <a id="downloadLink" style="display:none;">Download Photo</a>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const capturedImage = document.getElementById('capturedImage');
+        const downloadLink = document.getElementById('downloadLink');
+
+        // Request access to the user's webcam
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (error) {
+                console.error('Error accessing webcam:', error);
+            }
+        }
+
+        // Capture a photo from the webcam
+        function capturePhoto() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Display the captured image on the page
+            capturedImage.src = canvas.toDataURL('image/jpeg', 1.0);
+            capturedImage.style.display = 'block';
+
+            // Display the download link
+            downloadLink.href = capturedImage.src;
+            downloadLink.style.display = 'block';
+        }
+
+        // Initialize the webcam when the page loads
+        window.addEventListener('load', () => {
+            initCamera()
+                .then(() => {
+                    captureButton.disabled = false;
+                })
+                .catch((error) => {
+                    console.error('Error initializing camera:', error);
+                });
+        });
+
+        // Add a click event listener to the capture button
+        captureButton.addEventListener('click', () => {
+            capturePhoto();
+        });
+    </script>
+</body>
+</html>
